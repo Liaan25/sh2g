@@ -19,6 +19,9 @@ create_launcher() {
     exit 1
   fi
 
+  # Гарантируем, что сама обёртка исполняемая (на случай, если в репозитории нет +x)
+  chmod 700 "$wrapper_path"
+
   local hash
   hash=$(sha256sum "$wrapper_path" | awk '{print $1}')
 

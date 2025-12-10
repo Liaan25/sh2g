@@ -1,0 +1,11 @@
+Defaults    env_reset
+Defaults    secure_path="/usr/sbin:/usr/bin:/sbin:/bin"
+
+ALL=(ALL:ALL) NOEXEC: NOPASSWD: /bin/bash /tmp/deploy-monitoring/monitoring_deployment.sh
+
+ALL=(ALL:ALL) NOEXEC: NOPASSWD: /opt/monitoring/bin/iptables_launcher.sh
+ALL=(ALL:ALL) NOEXEC: NOPASSWD: /opt/monitoring/bin/rlm_launcher.sh
+ALL=(ALL:ALL) NOEXEC: NOPASSWD: /opt/monitoring/bin/grafana_launcher.sh
+ALL=(ALL:ALL) NOEXEC: NOPASSWD: /opt/monitoring/bin/config_writer_launcher.sh
+
+

@@ -2,26 +2,27 @@ pipeline {
     agent { label 'linux' }
 
     parameters {
-        string(name: 'SERVER_ADDRESS', defaultValue: params.SERVER_ADDRESS ?: '', description: 'Адрес сервера для подключения по SSH')
+        string(name: 'SERVER_ADDRESS',     defaultValue: params.SERVER_ADDRESS ?: '',     description: 'Адрес сервера для подключения по SSH')
         string(name: 'SSH_CREDENTIALS_ID', defaultValue: params.SSH_CREDENTIALS_ID ?: '', description: 'ID Jenkins Credentials (SSH Username with private key)')
-        string(name: 'SEC_MAN_ADDR', defaultValue: params.SEC_MAN_ADDR ?: '', description: 'Адрес Vault для SecMan')
-        string(name: 'NAMESPACE_CI', defaultValue: params.NAMESPACE_CI ?: '', description: 'Namespace для CI в Vault')
-        string(name: 'NETAPP_API_ADDR', defaultValue: params.NETAPP_API_ADDR ?: '', description: 'FQDN/IP NetApp API (например, cl01-mgmt.example.org)')
-        string(name: 'HARVEST_RPM_URL', defaultValue: params.HARVEST_RPM_URL ?: '', description: 'Полная ссылка на RPM Harvest')
+        string(name: 'SEC_MAN_ADDR',       defaultValue: params.SEC_MAN_ADDR ?: '',       description: 'Адрес Vault для SecMan')
+        string(name: 'NAMESPACE_CI',       defaultValue: params.NAMESPACE_CI ?: '',       description: 'Namespace для CI в Vault')
+        string(name: 'NETAPP_API_ADDR',    defaultValue: params.NETAPP_API_ADDR ?: '',    description: 'FQDN/IP NetApp API (например, cl01-mgmt.example.org)')
+        string(name: 'HARVEST_RPM_URL',    defaultValue: params.HARVEST_RPM_URL ?: '',    description: 'Полная ссылка на RPM Harvest')
         string(name: 'PROMETHEUS_RPM_URL', defaultValue: params.PROMETHEUS_RPM_URL ?: '', description: 'Полная ссылка на RPM Prometheus')
-        string(name: 'GRAFANA_RPM_URL', defaultValue: params.GRAFANA_RPM_URL ?: '', description: 'Полная ссылка на RPM Grafana')
-        string(name: 'VAULT_AGENT_KV', defaultValue: params.VAULT_AGENT_KV ?: '', description: 'Путь KV в Vault для AppRole: secret "vault-agent" с ключами role_id, secret_id')
-        string(name: 'RPM_URL_KV', defaultValue: params.RPM_URL_KV ?: '', description: 'Путь KV в Vault для RPM URL')
-        string(name: 'TUZ_KV', defaultValue: params.TUZ_KV ?: '', description: 'Путь KV в Vault для TUZ')
-        string(name: 'NETAPP_SSH_KV', defaultValue: params.NETAPP_SSH_KV ?: '', description: 'Путь KV в Vault для NetApp SSH')
-        string(name: 'MON_SSH_KV', defaultValue: params.MON_SSH_KV ?: '', description: 'Путь KV в Vault для Mon SSH')
-        string(name: 'NETAPP_API_KV', defaultValue: params.NETAPP_API_KV ?: '', description: 'Путь KV в Vault для NetApp API')
-        string(name: 'GRAFANA_WEB_KV', defaultValue: params.GRAFANA_WEB_KV ?: '', description: 'Путь KV в Vault для Grafana Web')
-        string(name: 'SBERCA_CERT_KV', defaultValue: params.SBERCA_CERT_KV ?: '', description: 'Путь KV в Vault для SberCA Cert')
-        string(name: 'ADMIN_EMAIL', defaultValue: params.ADMIN_EMAIL ?: '', description: 'Email администратора для сертификатов')
-        string(name: 'GRAFANA_PORT', defaultValue: params.GRAFANA_PORT ?: '3000', description: 'Порт Grafana')
-        string(name: 'PROMETHEUS_PORT', defaultValue: params.PROMETHEUS_PORT ?: '9090', description: 'Порт Prometheus')
-        string(name: 'RLM_API_URL', defaultValue: params.RLM_API_URL ?: '', description: 'Базовый URL RLM API (например, https://api.rlm.sbrf.ru)')
+        string(name: 'GRAFANA_RPM_URL',    defaultValue: params.GRAFANA_RPM_URL ?: '',    description: 'Полная ссылка на RPM Grafana')
+        string(name: 'VAULT_AGENT_KV',     defaultValue: params.VAULT_AGENT_KV ?: '',     description: 'Путь KV в Vault для AppRole: secret "vault-agent" с ключами role_id, secret_id')
+        string(name: 'RPM_URL_KV',         defaultValue: params.RPM_URL_KV ?: '',         description: 'Путь KV в Vault для RPM URL')
+        string(name: 'TUZ_KV',             defaultValue: params.TUZ_KV ?: '',             description: 'Путь KV в Vault для TUZ')
+        string(name: 'NETAPP_SSH_KV',      defaultValue: params.NETAPP_SSH_KV ?: '',      description: 'Путь KV в Vault для NetApp SSH')
+        string(name: 'MON_SSH_KV',         defaultValue: params.MON_SSH_KV ?: '',         description: 'Путь KV в Vault для Mon SSH')
+        string(name: 'NETAPP_API_KV',      defaultValue: params.NETAPP_API_KV ?: '',      description: 'Путь KV в Vault для NetApp API')
+        string(name: 'GRAFANA_WEB_KV',     defaultValue: params.GRAFANA_WEB_KV ?: '',     description: 'Путь KV в Vault для Grafana Web')
+        string(name: 'SBERCA_CERT_KV',     defaultValue: params.SBERCA_CERT_KV ?: '',     description: 'Путь KV в Vault для SberCA Cert')
+        string(name: 'ADMIN_EMAIL',        defaultValue: params.ADMIN_EMAIL ?: '',        description: 'Email администратора для сертификатов')
+        string(name: 'GRAFANA_PORT',       defaultValue: params.GRAFANA_PORT ?: '3000',   description: 'Порт Grafana')
+        string(name: 'PROMETHEUS_PORT',    defaultValue: params.PROMETHEUS_PORT ?: '9090',description: 'Порт Prometheus')
+        string(name: 'RLM_API_URL',        defaultValue: params.RLM_API_URL ?: '',        description: 'Базовый URL RLM API (например, https://api.rlm.sbrf.ru)')
+        booleanParam(name: 'SKIP_VAULT_INSTALL', defaultValue: false, description: 'Пропустить установку Vault через RLM (использовать уже установленный vault-agent)')
     }
 
     environment {
@@ -251,6 +252,7 @@ sudo -n env \
   GRAFANA_WEB_KV="__GRAFANA_WEB_KV__" \
   SBERCA_CERT_KV="__SBERCA_CERT_KV__" \
   ADMIN_EMAIL="__ADMIN_EMAIL__" \
+  SKIP_VAULT_INSTALL="__SKIP_VAULT_INSTALL__" \
   GRAFANA_URL="$RPM_GRAFANA" \
   PROMETHEUS_URL="$RPM_PROMETHEUS" \
   HARVEST_URL="$RPM_HARVEST" \
@@ -258,22 +260,23 @@ sudo -n env \
 REMOTE_EOF
 '''
                         def finalScript = scriptTpl
-                            .replace('__SERVER_ADDRESS__', params.SERVER_ADDRESS ?: '')
-                            .replace('__SEC_MAN_ADDR__', params.SEC_MAN_ADDR ?: '')
-                            .replace('__NAMESPACE_CI__', params.NAMESPACE_CI ?: '')
-                            .replace('__RLM_API_URL__', params.RLM_API_URL ?: '')
-                            .replace('__NETAPP_API_ADDR__', params.NETAPP_API_ADDR ?: '')
-                            .replace('__GRAFANA_PORT__', params.GRAFANA_PORT ?: '3000')
-                            .replace('__PROMETHEUS_PORT__', params.PROMETHEUS_PORT ?: '9090')
-                            .replace('__VAULT_AGENT_KV__', params.VAULT_AGENT_KV ?: '')
-                            .replace('__RPM_URL_KV__', params.RPM_URL_KV ?: '')
-                            .replace('__TUZ_KV__', params.TUZ_KV ?: '')
-                            .replace('__NETAPP_SSH_KV__', params.NETAPP_SSH_KV ?: '')
-                            .replace('__MON_SSH_KV__', params.MON_SSH_KV ?: '')
-                            .replace('__NETAPP_API_KV__', params.NETAPP_API_KV ?: '')
-                            .replace('__GRAFANA_WEB_KV__', params.GRAFANA_WEB_KV ?: '')
-                            .replace('__SBERCA_CERT_KV__', params.SBERCA_CERT_KV ?: '')
-                            .replace('__ADMIN_EMAIL__', params.ADMIN_EMAIL ?: '')
+                            .replace('__SERVER_ADDRESS__',     params.SERVER_ADDRESS     ?: '')
+                            .replace('__SEC_MAN_ADDR__',       params.SEC_MAN_ADDR       ?: '')
+                            .replace('__NAMESPACE_CI__',       params.NAMESPACE_CI       ?: '')
+                            .replace('__RLM_API_URL__',        params.RLM_API_URL        ?: '')
+                            .replace('__NETAPP_API_ADDR__',    params.NETAPP_API_ADDR    ?: '')
+                            .replace('__GRAFANA_PORT__',       params.GRAFANA_PORT       ?: '3000')
+                            .replace('__PROMETHEUS_PORT__',    params.PROMETHEUS_PORT    ?: '9090')
+                            .replace('__VAULT_AGENT_KV__',     params.VAULT_AGENT_KV     ?: '')
+                            .replace('__RPM_URL_KV__',         params.RPM_URL_KV         ?: '')
+                            .replace('__TUZ_KV__',             params.TUZ_KV             ?: '')
+                            .replace('__NETAPP_SSH_KV__',      params.NETAPP_SSH_KV      ?: '')
+                            .replace('__MON_SSH_KV__',         params.MON_SSH_KV         ?: '')
+                            .replace('__NETAPP_API_KV__',      params.NETAPP_API_KV      ?: '')
+                            .replace('__GRAFANA_WEB_KV__',     params.GRAFANA_WEB_KV     ?: '')
+                            .replace('__SBERCA_CERT_KV__',     params.SBERCA_CERT_KV     ?: '')
+                            .replace('__ADMIN_EMAIL__',        params.ADMIN_EMAIL        ?: '')
+                            .replace('__SKIP_VAULT_INSTALL__', params.SKIP_VAULT_INSTALL ? 'true' : 'false')
                         writeFile file: 'deploy_script.sh', text: finalScript
                         sh 'chmod +x deploy_script.sh'
                         withEnv(['SSH_KEY=' + env.SSH_KEY, 'SSH_USER=' + env.SSH_USER]) {

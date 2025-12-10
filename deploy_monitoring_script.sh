@@ -1613,7 +1613,15 @@ main() {
     detect_network_info
     cleanup_all_previous
     create_directories
-    install_vault_via_rlm
+
+    # При необходимости можно пропустить установку Vault через RLM,
+    # если vault-agent уже установлен и настроен на целевом сервере.
+    if [[ "${SKIP_VAULT_INSTALL:-false}" == "true" ]]; then
+        print_warning "SKIP_VAULT_INSTALL=true: пропускаем install_vault_via_rlm, используем уже установленный vault-agent"
+    else
+        install_vault_via_rlm
+    fi
+
     setup_vault_config
     load_config_from_json
     create_rlm_install_tasks

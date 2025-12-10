@@ -23,15 +23,15 @@ fail() {
 validate_target() {
   local path="$1"
   case "$path" in
-    /etc/environment.d/99-monitoring-vars.conf \
-    /opt/vault/conf/agent.hcl \
-    /etc/grafana/grafana.ini \
-    /etc/prometheus/web-config.yml \
-    /etc/prometheus/prometheus.env \
-    /etc/profile.d/harvest.sh \
-    /opt/harvest/harvest.yml \
-    /etc/systemd/system/harvest.service \
-    /etc/prometheus/prometheus.yml \
+    /etc/environment.d/99-monitoring-vars.conf|\
+    /opt/vault/conf/agent.hcl|\
+    /etc/grafana/grafana.ini|\
+    /etc/prometheus/web-config.yml|\
+    /etc/prometheus/prometheus.env|\
+    /etc/profile.d/harvest.sh|\
+    /opt/harvest/harvest.yml|\
+    /etc/systemd/system/harvest.service|\
+    /etc/prometheus/prometheus.yml|\
     /var/lib/monitoring_deployment_state)
       return 0
       ;;

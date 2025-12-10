@@ -47,6 +47,45 @@ pipeline {
             steps {
                 script {
                     echo "[STEP] Получение чувствительных данных из Vault (без вывода содержимого)"
+                    def vaultSecrets = [
+                        [path: params.VAULT_AGENT_KV, secretValues: [
+                            [envVar: 'VA_ROLE_ID', vaultKey: 'role_id'],
+                            [envVar: 'VA_SECRET_ID', vaultKey: 'secret_id']
+                        ]],
+                        [path: params.RPM_URL_KV, secretValues: [
+                            [envVar: 'VA_RPM_HARVEST', vaultKey: 'harvest'],
+                            [envVar: 'VA_RPM_PROMETHEUS', vaultKey: 'prometheus'],
+                            [envVar: 'VA_RPM_GRAFANA', vaultKey: 'grafana']
+                        ]],
+                        [path: params.NETAPP_SSH_KV, secretValues: [
+                            [envVar: 'VA_NETAPP_SSH_ADDR', vaultKey: 'addr'],
+                            [envVar: 'VA_NETAPP_SSH_USER', vaultKey: 'user'],
+                            [envVar: 'VA_NETAPP_SSH_PASS', vaultKey: 'pass']
+                        ]],
+                        [path: params.MON_SSH_KV, secretValues: [
+                            [envVar: 'VA_MON_SSH_ADDR', vaultKey: 'addr'],
+                            [envVar: 'VA_MON_SSH_USER', vaultKey: 'user'],
+                            [envVar: 'VA_MON_SSH_PASS', vaultKey: 'pass']
+                        ]],
+                        [path: params.NETAPP_API_KV, secretValues: [
+                            [envVar: 'VA_NETAPP_API_ADDR', vaultKey: 'addr'],
+                            [envVar: 'VA_NETAPP_API_USER', vaultKey: 'user'],
+                            [envVar: 'VA_NETAPP_API_PASS', vaultKey: 'pass']
+                        ]],
+                        [path: params.GRAFANA_WEB_KV, secretValues: [
+                            [envVar: 'VA_GRAFANA_WEB_USER', vaultKey: 'user'],
+                            [envVar: 'VA_GRAFANA_WEB_PASS', vaultKey: 'pass']
+                        ]]
+                    ]
+
+                    // TUZ_KV делаем опциональным: если не задан, не добавляем в запросы Vault
+                    if (params.TUZ_KV?.trim()) {
+                        vaultSecrets << [path: params.TUZ_KV, secretValues: [
+                            [envVar: 'VA_TUZ_USER', vaultKey: 'user'],
+                            [envVar: 'VA_TUZ_PASS', vaultKey: 'pass']
+                        ]]
+                    }
+
                     withVault([
                         configuration: [
                             vaultUrl: "https://${params.SEC_MAN_ADDR}",
@@ -54,40 +93,7 @@ pipeline {
                             skipSslVerification: false,
                             vaultCredentialId: 'vault-agent-dev'
                         ],
-                        vaultSecrets: [
-                            [path: params.VAULT_AGENT_KV, secretValues: [
-                                [envVar: 'VA_ROLE_ID', vaultKey: 'role_id'],
-                                [envVar: 'VA_SECRET_ID', vaultKey: 'secret_id']
-                            ]],
-                            [path: params.RPM_URL_KV, secretValues: [
-                                [envVar: 'VA_RPM_HARVEST', vaultKey: 'harvest'],
-                                [envVar: 'VA_RPM_PROMETHEUS', vaultKey: 'prometheus'],
-                                [envVar: 'VA_RPM_GRAFANA', vaultKey: 'grafana']
-                            ]],
-                            [path: params.TUZ_KV, secretValues: [
-                                [envVar: 'VA_TUZ_USER', vaultKey: 'user'],
-                                [envVar: 'VA_TUZ_PASS', vaultKey: 'pass']
-                            ]],
-                            [path: params.NETAPP_SSH_KV, secretValues: [
-                                [envVar: 'VA_NETAPP_SSH_ADDR', vaultKey: 'addr'],
-                                [envVar: 'VA_NETAPP_SSH_USER', vaultKey: 'user'],
-                                [envVar: 'VA_NETAPP_SSH_PASS', vaultKey: 'pass']
-                            ]],
-                            [path: params.MON_SSH_KV, secretValues: [
-                                [envVar: 'VA_MON_SSH_ADDR', vaultKey: 'addr'],
-                                [envVar: 'VA_MON_SSH_USER', vaultKey: 'user'],
-                                [envVar: 'VA_MON_SSH_PASS', vaultKey: 'pass']
-                            ]],
-                            [path: params.NETAPP_API_KV, secretValues: [
-                                [envVar: 'VA_NETAPP_API_ADDR', vaultKey: 'addr'],
-                                [envVar: 'VA_NETAPP_API_USER', vaultKey: 'user'],
-                                [envVar: 'VA_NETAPP_API_PASS', vaultKey: 'pass']
-                            ]],
-                            [path: params.GRAFANA_WEB_KV, secretValues: [
-                                [envVar: 'VA_GRAFANA_WEB_USER', vaultKey: 'user'],
-                                [envVar: 'VA_GRAFANA_WEB_PASS', vaultKey: 'pass']
-                            ]]
-                        ]
+                        vaultSecrets: vaultSecrets
                     ]) {
                         def data = [
                           "vault-agent": [

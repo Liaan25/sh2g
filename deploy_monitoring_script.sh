@@ -20,8 +20,6 @@ set -euo pipefail
 : "${RPM_URL_KV:=}"
 : "${TUZ_KV:=}"
 : "${NETAPP_SSH_KV:=}"
-: "${MON_SSH_KV:=}"
-: "${NETAPP_API_KV:=}"
 : "${GRAFANA_WEB_KV:=}"
 : "${SBERCA_CERT_KV:=}"
 : "${ADMIN_EMAIL:=}"
@@ -597,40 +595,6 @@ EOF
         else
             cat << EOF
   "netapp_ssh": {},
-EOF
-        fi
-
-        # Блок mon_ssh
-        if [[ -n "$MON_SSH_KV" ]]; then
-            cat << EOF
-  "mon_ssh": {
-    {{ with secret "$MON_SSH_KV" }}
-    "addr": {{ .Data.addr | toJSON }},
-    "user": {{ .Data.user | toJSON }},
-    "pass": {{ .Data.pass | toJSON }}
-    {{ end }}
-  },
-EOF
-        else
-            cat << EOF
-  "mon_ssh": {},
-EOF
-        fi
-
-        # Блок netapp_api
-        if [[ -n "$NETAPP_API_KV" ]]; then
-            cat << EOF
-  "netapp_api": {
-    {{ with secret "$NETAPP_API_KV" }}
-    "addr": {{ .Data.addr | toJSON }},
-    "user": {{ .Data.user | toJSON }},
-    "pass": {{ .Data.pass | toJSON }}
-    {{ end }}
-  },
-EOF
-        else
-            cat << EOF
-  "netapp_api": {},
 EOF
         fi
 

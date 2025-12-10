@@ -11,8 +11,6 @@ pipeline {
         string(name: 'RPM_URL_KV',         defaultValue: params.RPM_URL_KV ?: '',         description: 'Путь KV в Vault для RPM URL')
         string(name: 'TUZ_KV',             defaultValue: params.TUZ_KV ?: '',             description: 'Путь KV в Vault для TUZ')
         string(name: 'NETAPP_SSH_KV',      defaultValue: params.NETAPP_SSH_KV ?: '',      description: 'Путь KV в Vault для NetApp SSH')
-        string(name: 'MON_SSH_KV',         defaultValue: params.MON_SSH_KV ?: '',         description: 'Путь KV в Vault для Mon SSH')
-        string(name: 'NETAPP_API_KV',      defaultValue: params.NETAPP_API_KV ?: '',      description: 'Путь KV в Vault для NetApp API')
         string(name: 'GRAFANA_WEB_KV',     defaultValue: params.GRAFANA_WEB_KV ?: '',     description: 'Путь KV в Vault для Grafana Web')
         string(name: 'SBERCA_CERT_KV',     defaultValue: params.SBERCA_CERT_KV ?: '',     description: 'Путь KV в Vault для SberCA Cert')
         string(name: 'ADMIN_EMAIL',        defaultValue: params.ADMIN_EMAIL ?: '',        description: 'Email администратора для сертификатов')
@@ -67,20 +65,6 @@ pipeline {
                             [envVar: 'VA_NETAPP_SSH_PASS', vaultKey: 'pass']
                         ]]
                     }
-                    if (params.MON_SSH_KV?.trim()) {
-                        vaultSecrets << [path: params.MON_SSH_KV, secretValues: [
-                            [envVar: 'VA_MON_SSH_ADDR',  vaultKey: 'addr'],
-                            [envVar: 'VA_MON_SSH_USER',  vaultKey: 'user'],
-                            [envVar: 'VA_MON_SSH_PASS',  vaultKey: 'pass']
-                        ]]
-                    }
-                    if (params.NETAPP_API_KV?.trim()) {
-                        vaultSecrets << [path: params.NETAPP_API_KV, secretValues: [
-                            [envVar: 'VA_NETAPP_API_ADDR', vaultKey: 'addr'],
-                            [envVar: 'VA_NETAPP_API_USER', vaultKey: 'user'],
-                            [envVar: 'VA_NETAPP_API_PASS', vaultKey: 'pass']
-                        ]]
-                    }
                     if (params.GRAFANA_WEB_KV?.trim()) {
                         vaultSecrets << [path: params.GRAFANA_WEB_KV, secretValues: [
                             [envVar: 'VA_GRAFANA_WEB_USER', vaultKey: 'user'],
@@ -125,16 +109,6 @@ pipeline {
                             addr: (env.VA_NETAPP_SSH_ADDR ?: ''),
                             user: (env.VA_NETAPP_SSH_USER ?: ''),
                             pass: (env.VA_NETAPP_SSH_PASS ?: '')
-                          ],
-                          "mon_ssh": [
-                            addr: (env.VA_MON_SSH_ADDR ?: ''),
-                            user: (env.VA_MON_SSH_USER ?: ''),
-                            pass: (env.VA_MON_SSH_PASS ?: '')
-                          ],
-                          "netapp_api": [
-                            addr: (env.VA_NETAPP_API_ADDR ?: ''),
-                            user: (env.VA_NETAPP_API_USER ?: ''),
-                            pass: (env.VA_NETAPP_API_PASS ?: '')
                           ],
                           "grafana_web": [
                             user: (env.VA_GRAFANA_WEB_USER ?: ''),
@@ -243,8 +217,6 @@ sudo -n env \
   RPM_URL_KV="__RPM_URL_KV__" \
   TUZ_KV="__TUZ_KV__" \
   NETAPP_SSH_KV="__NETAPP_SSH_KV__" \
-  MON_SSH_KV="__MON_SSH_KV__" \
-  NETAPP_API_KV="__NETAPP_API_KV__" \
   GRAFANA_WEB_KV="__GRAFANA_WEB_KV__" \
   SBERCA_CERT_KV="__SBERCA_CERT_KV__" \
   ADMIN_EMAIL="__ADMIN_EMAIL__" \
@@ -267,8 +239,6 @@ REMOTE_EOF
                             .replace('__RPM_URL_KV__',         params.RPM_URL_KV         ?: '')
                             .replace('__TUZ_KV__',             params.TUZ_KV             ?: '')
                             .replace('__NETAPP_SSH_KV__',      params.NETAPP_SSH_KV      ?: '')
-                            .replace('__MON_SSH_KV__',         params.MON_SSH_KV         ?: '')
-                            .replace('__NETAPP_API_KV__',      params.NETAPP_API_KV      ?: '')
                             .replace('__GRAFANA_WEB_KV__',     params.GRAFANA_WEB_KV     ?: '')
                             .replace('__SBERCA_CERT_KV__',     params.SBERCA_CERT_KV     ?: '')
                             .replace('__ADMIN_EMAIL__',        params.ADMIN_EMAIL        ?: '')
